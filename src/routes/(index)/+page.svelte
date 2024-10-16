@@ -43,8 +43,8 @@
   };
 </script>
 
-<div class="flex min-h-screen flex-col items-center justify-center">
-  <div class="flex items-center gap-2.5">
+<div class="flex min-h-screen flex-col items-center justify-center gap-5 p-2.5">
+  <div class="flex flex-wrap items-center gap-2.5">
     <div class="flex w-full max-w-sm flex-col gap-1.5">
       <Label for="px" class="font-bold">Pixel</Label>
       <div class="relative flex items-center">
