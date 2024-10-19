@@ -2,12 +2,9 @@
   import * as Popover from '$lib/components/ui/popover';
   import * as Avatar from '$lib/components/ui/avatar';
   import Logout from './Logout.svelte';
-  import { fromUserState } from '$lib/components/state/userState.svelte';
+  import { fromUserState } from '$lib/state/userState.svelte';
 
   const userState = fromUserState();
-  $effect(() => {
-    console.log($state.snapshot(userState.get()));
-  });
 
   let logoutSignal = $state(false);
   let open = $state(false);

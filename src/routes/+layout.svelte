@@ -7,32 +7,44 @@
   import ChatChamber from '$lib/components/general/Nav/_components/ChatChamber/ChatChamber.svelte';
   import { onAuthStateChanged } from 'firebase/auth';
   import { auth, db } from '$lib/db/firebaseConfig';
-  import { onSnapshot, collection } from 'firebase/firestore';
-  import { fromUserState, initUserState } from '$lib/components/state/userState.svelte';
+  import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
+  import { fromUserState, initUserState } from '$lib/state/userState.svelte';
   import { toast } from 'svelte-sonner';
   import type { Chats } from '$lib/types';
-  import { chats } from '$lib/components/state/chats.svelte';
-
+  import { onDestroy } from 'svelte';
+  import { chats } from '$lib/state/chats.svelte';
   const { children } = $props();
 
   initUserState();
+
   const userState = fromUserState();
   onAuthStateChanged(auth, (user) => {
     if (user) {
       userState.set(user);
+
+      const q = query(collection(db, 'chats'), orderBy('timeStamp', 'asc'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let chatsTemp: Chats[] = [];
+        querySnapshot.forEach((doc) => {
+          chatsTemp.push({ ...(doc.data() as Chats) });
+        });
+
+        chats.set(chatsTemp);
+      });
+
       toast.success('', { description: `Welcome back! ${user.displayName}` });
     } else {
       userState.set(null);
+      const q = query(collection(db, 'chats'), orderBy('timeStamp', 'asc'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let chatsTemp: Chats[] = [];
+        querySnapshot.forEach((doc) => {
+          chatsTemp.push({ ...(doc.data() as Chats) });
+        });
+
+        chats.set(chatsTemp);
+      });
     }
-  });
-
-  const unsubscribe = onSnapshot(collection(db, 'chats'), (querySnapshot) => {
-    let chatsTemp: Chats[] = [];
-    querySnapshot.forEach((doc) => {
-      chatsTemp.push({ ...(doc.data() as Chats) });
-    });
-
-    chats = chatsTemp;
   });
 </script>
 
